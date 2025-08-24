@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { authApiService } from "../services/authApi";
-import { User } from "../types/auth";
 import styled from "styled-components/native";
 import { FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import { Button, Icon } from "react-native-elements";
@@ -12,6 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Appointment } from "../types/appointments";
 import { RootStackParamList } from "../types/navigation";
 import { useFocusEffect } from "@react-navigation/native";
+import { authApiService } from "../services/authApi";
+import { User } from "../types/auth";
 
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -19,9 +19,10 @@ type HomeScreenProps = {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [doctors, setDoctors] = useState<User[]>([]);
+  const [doctors, setDoctors] = useState<User[]>([]); // ✅ médicos da API
   const [refreshing, setRefreshing] = useState(false);
 
+  // Carrega consultas do AsyncStorage
   const loadAppointments = async () => {
     try {
       const storedAppointments = await AsyncStorage.getItem("appointments");
@@ -33,6 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  // ✅ Carrega médicos da API
   const loadDoctors = async () => {
     try {
       const doctorsData = await authApiService.getAllDoctors();
@@ -42,6 +44,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  // Atualiza dados quando a tela fica em foco
   useFocusEffect(
     React.useCallback(() => {
       loadAppointments();
@@ -52,9 +55,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const onRefresh = async () => {
     setRefreshing(true);
     await loadAppointments();
+    await loadDoctors();
     setRefreshing(false);
   };
 
+  // Busca dados do médico real
   const getDoctorInfo = (doctorId: string): User | undefined => {
     return doctors.find((doctor) => doctor.id === doctorId);
   };
@@ -70,7 +75,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <InfoContainer>
           <DoctorName>{doctor?.name || "Médico não encontrado"}</DoctorName>
           <DoctorSpecialty>
-            {doctor?.specialty || "Especialidade não encontrada"}
+            {doctor?.role === "doctor" && "specialty" in doctor
+              ? doctor.specialty
+              : "Especialidade não encontrada"}
           </DoctorSpecialty>
           <DateTime>
             {new Date(item.date).toLocaleDateString()} - {item.time}
@@ -234,4 +241,3 @@ const EmptyText = styled.Text`
 `;
 
 export default HomeScreen;
-

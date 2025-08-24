@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
 import { ScrollView, ViewStyle } from "react-native";
 import { Button, Input } from "react-native-elements";
@@ -40,9 +40,6 @@ interface Doctor {
   image: string;
 }
 
-// Lista de médicos disponíveis
-const availableDoctors: Doctor[] = [];
-
 const CreateAppointmentScreen: React.FC = () => {
   const { user } = useAuth();
   const navigation =
@@ -52,8 +49,39 @@ const CreateAppointmentScreen: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Estados para médicos da API
   const [doctors, setDoctors] = useState<User[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
+
+  useEffect(() => {
+    loadDoctors();
+  }, []);
+
+  const loadDoctors = async () => {
+    try {
+      setLoadingDoctors(true);
+      const doctorsData = await authApiService.getAllDoctors();
+      setDoctors(doctorsData);
+    } catch (err) {
+      console.error("Erro ao carregar médicos:", err);
+      setError("Erro ao carregar médicos. Tente novamente.");
+    } finally {
+      setLoadingDoctors(false);
+    }
+  };
+
+  const convertUsersToDoctors = (users: User[]): Doctor[] => {
+    return users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      specialty:
+        "specialty" in user && user.role === "doctor"
+          ? user.specialty
+          : "Especialidade não informada",
+      image: user.image,
+    }));
+  };
 
   const handleCreateAppointment = async () => {
     try {
@@ -65,7 +93,6 @@ const CreateAppointmentScreen: React.FC = () => {
         return;
       }
 
-      // Recupera consultas existentes
       const storedAppointments = await AsyncStorage.getItem(
         "@MedicalApp:appointments",
       );
@@ -73,7 +100,6 @@ const CreateAppointmentScreen: React.FC = () => {
         ? JSON.parse(storedAppointments)
         : [];
 
-      // Cria nova consulta
       const newAppointment: Appointment = {
         id: Date.now().toString(),
         patientId: user?.id || "",
@@ -86,10 +112,7 @@ const CreateAppointmentScreen: React.FC = () => {
         status: "pending",
       };
 
-      // Adiciona nova consulta à lista
       appointments.push(newAppointment);
-
-      // Salva lista atualizada
       await AsyncStorage.setItem(
         "@MedicalApp:appointments",
         JSON.stringify(appointments),
@@ -102,35 +125,6 @@ const CreateAppointmentScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadDoctors();
-  }, []);
-
-  const loadDoctors = async () => {
-    try {
-      setLoadingDoctors(true);
-      const doctorsData = await authApiService.getAllDoctors();
-      setDoctors(doctorsData);
-    } catch (error) {
-      console.error("Erro ao carregar médicos:", error);
-      setError("Erro ao carregar médicos. Tente novamente.");
-    } finally {
-      setLoadingDoctors(false);
-    }
-  };
-
-  const convertUsersToDoctors = (users: User[]): Doctor[] => {
-    return users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      specialty:
-        user.role === "doctor" && "specialty" in user
-          ? user.specialty
-          : "Especialidade não informada",
-      image: user.image,
-    }));
   };
 
   return (
@@ -158,7 +152,7 @@ const CreateAppointmentScreen: React.FC = () => {
           <ErrorText>Carregando médicos...</ErrorText>
         ) : (
           <DoctorList
-            doctors={convertUsersToDoctors(doctors)} // ✅ Dados reais convertidos
+            doctors={convertUsersToDoctors(doctors)}
             onSelectDoctor={setSelectedDoctor}
             selectedDoctorId={selectedDoctor?.id}
           />
@@ -234,3 +228,4 @@ const ErrorText = styled.Text`
 `;
 
 export default CreateAppointmentScreen;
+

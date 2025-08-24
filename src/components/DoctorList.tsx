@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { ViewStyle } from 'react-native';
-import { ListItem, Avatar } from 'react-native-elements';
-import theme from '../styles/theme';
+import React from "react";
+import styled from "styled-components/native";
+import { ViewStyle } from "react-native";
+import { ListItem, Avatar } from "react-native-elements";
+import theme from "../styles/theme";
 
 interface Doctor {
   id: string;
@@ -63,7 +63,7 @@ const styles = {
     borderColor: theme.colors.border,
   },
   selectedItem: {
-    backgroundColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.primary + "20",
     borderColor: theme.colors.primary,
   },
   avatar: {
@@ -71,7 +71,7 @@ const styles = {
   },
   name: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.text,
   },
   specialty: {
@@ -85,4 +85,5 @@ const Container = styled.View`
   margin-bottom: 15px;
 `;
 
-export default DoctorList; 
+export default DoctorList;
+

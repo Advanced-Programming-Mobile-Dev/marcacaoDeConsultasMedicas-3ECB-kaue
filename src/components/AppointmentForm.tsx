@@ -32,21 +32,20 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
   const [dateInput, setDateInput] = useState("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
 
-  // Estados para dados da API
+  // ✅ Estados para dados da API
   const [doctors, setDoctors] = useState<User[]>([]);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   const timeSlots = generateTimeSlots();
 
-  // Carrega especialidades e médicos ao montar o componente
+  // ✅ Carregamento inicial de dados
   useEffect(() => {
     loadInitialData();
   }, []);
 
-  // Carrega médicos quando uma especialidade é selecionada
   useEffect(() => {
     if (selectedSpecialty) {
       loadDoctorsBySpecialty(selectedSpecialty);
@@ -65,6 +64,10 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
       await loadAllDoctors();
     } catch (error) {
       console.error("Erro ao carregar dados iniciais:", error);
+      Alert.alert(
+        "Erro",
+        "Não foi possível carregar os dados. Tente novamente.",
+      );
     } finally {
       setLoading(false);
     }
@@ -83,6 +86,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
     try {
       const doctorsData = await authApiService.getDoctorsBySpecialty(specialty);
       setDoctors(doctorsData);
+      setSelectedDoctor(""); // reseta seleção ao mudar especialidade
     } catch (error) {
       console.error("Erro ao carregar médicos por especialidade:", error);
     }
@@ -103,10 +107,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
   };
 
   const handleDateChange = (text: string) => {
-    // Remove todos os caracteres não numéricos
     const numbers = text.replace(/\D/g, "");
-
-    // Formata a data enquanto digita
     let formattedDate = "";
     if (numbers.length > 0) {
       if (numbers.length <= 2) {
@@ -117,7 +118,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
         formattedDate = `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
       }
     }
-
     setDateInput(formattedDate);
   };
 
@@ -144,8 +144,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit }) => {
   };
 
   const isTimeSlotAvailable = (time: string) => {
-    // Aqui você pode adicionar lógica para verificar se o horário está disponível
-    // Por exemplo, verificar se já existe uma consulta agendada para este horário
     return true;
   };
 
@@ -401,4 +399,3 @@ const SpecialtyText = styled(Text)<{ selected: boolean }>`
 `;
 
 export default AppointmentForm;
-

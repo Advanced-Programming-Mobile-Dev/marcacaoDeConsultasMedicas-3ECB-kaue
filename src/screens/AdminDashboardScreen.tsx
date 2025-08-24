@@ -1,3 +1,4 @@
+// IMPORTAÇÕES
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { ScrollView, ViewStyle, TextStyle } from "react-native";
@@ -61,18 +62,19 @@ const getStatusText = (status: string) => {
 };
 
 const AdminDashboardScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"appointments" | "users">(
-    "appointments",
-  );
   const { user, signOut } = useAuth();
   const navigation = useNavigation<AdminDashboardScreenProps["navigation"]>();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ NOVO - Estado de aba ativa
+  const [activeTab, setActiveTab] = useState<"appointments" | "users">(
+    "appointments",
+  );
+
   const loadData = async () => {
     try {
-      // Carrega consultas
       const storedAppointments = await AsyncStorage.getItem(
         "@MedicalApp:appointments",
       );
@@ -81,7 +83,6 @@ const AdminDashboardScreen: React.FC = () => {
         setAppointments(allAppointments);
       }
 
-      // Carrega usuários
       const storedUsers = await AsyncStorage.getItem("@MedicalApp:users");
       if (storedUsers) {
         const allUsers: User[] = JSON.parse(storedUsers);
@@ -94,7 +95,6 @@ const AdminDashboardScreen: React.FC = () => {
     }
   };
 
-  // Carrega os dados quando a tela estiver em foco
   useFocusEffect(
     React.useCallback(() => {
       loadData();
@@ -121,7 +121,7 @@ const AdminDashboardScreen: React.FC = () => {
           "@MedicalApp:appointments",
           JSON.stringify(updatedAppointments),
         );
-        loadData(); // Recarrega os dados
+        loadData();
       }
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
@@ -134,6 +134,7 @@ const AdminDashboardScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Title>Painel Administrativo</Title>
 
+        {/* NOVO - Abas de navegação */}
         <TabContainer>
           <TabButton
             active={activeTab === "appointments"}
@@ -149,6 +150,7 @@ const AdminDashboardScreen: React.FC = () => {
           </TabButton>
         </TabContainer>
 
+        {/* CONTEÚDO CONDICIONAL */}
         {activeTab === "appointments" ? (
           <>
             <SectionTitle>Últimas Consultas</SectionTitle>
@@ -214,51 +216,7 @@ const AdminDashboardScreen: React.FC = () => {
   );
 };
 
-const styles = {
-  scrollContent: {
-    padding: 20,
-  },
-  button: {
-    marginBottom: 20,
-    width: "100%",
-  },
-  buttonStyle: {
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 12,
-  },
-  logoutButton: {
-    backgroundColor: theme.colors.error,
-    paddingVertical: 12,
-  },
-  actionButton: {
-    marginTop: 8,
-    width: "48%",
-  },
-  confirmButton: {
-    backgroundColor: theme.colors.success,
-    paddingVertical: 8,
-  },
-  cancelButton: {
-    backgroundColor: theme.colors.error,
-    paddingVertical: 8,
-  },
-  doctorName: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  specialty: {
-    fontSize: 14,
-    color: theme.colors.text,
-    marginTop: 4,
-  },
-  dateTime: {
-    fontSize: 14,
-    color: theme.colors.text,
-    marginTop: 4,
-  },
-};
-
+// STYLED COMPONENTS EXISTENTES
 const Container = styled.View`
   flex: 1;
   background-color: ${theme.colors.background};
@@ -324,6 +282,7 @@ const ButtonContainer = styled.View`
   margin-top: 8px;
 `;
 
+// ✅ NOVOS STYLED COMPONENTS - Abas
 const TabContainer = styled.View`
   flex-direction: row;
   background-color: ${theme.colors.surface};
@@ -347,5 +306,49 @@ const TabText = styled.Text<{ active: boolean }>`
   font-size: 16px;
 `;
 
-export default AdminDashboardScreen;
+const styles = {
+  scrollContent: {
+    padding: 20,
+  },
+  button: {
+    marginBottom: 20,
+    width: "100%",
+  },
+  buttonStyle: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+  },
+  logoutButton: {
+    backgroundColor: theme.colors.error,
+    paddingVertical: 12,
+  },
+  actionButton: {
+    marginTop: 8,
+    width: "48%",
+  },
+  confirmButton: {
+    backgroundColor: theme.colors.success,
+    paddingVertical: 8,
+  },
+  cancelButton: {
+    backgroundColor: theme.colors.error,
+    paddingVertical: 8,
+  },
+  doctorName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: theme.colors.text,
+  },
+  specialty: {
+    fontSize: 14,
+    color: theme.colors.text,
+    marginTop: 4,
+  },
+  dateTime: {
+    fontSize: 14,
+    color: theme.colors.text,
+    marginTop: 4,
+  },
+};
 
+export default AdminDashboardScreen;

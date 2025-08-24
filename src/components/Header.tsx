@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { Avatar } from 'react-native-elements';
-import { useAuth } from '../contexts/AuthContext';
-import theme from '../styles/theme';
+import React from "react";
+import styled from "styled-components/native";
+import { Avatar } from "react-native-elements";
+import { useAuth } from "../contexts/AuthContext";
+import theme from "../styles/theme";
 
 const Header: React.FC = () => {
   const { user } = useAuth();
@@ -62,3 +62,4 @@ const UserName = styled.Text`
 `;
 
 export default Header;
+

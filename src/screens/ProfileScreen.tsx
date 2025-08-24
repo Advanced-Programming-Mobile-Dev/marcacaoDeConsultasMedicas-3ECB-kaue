@@ -1,30 +1,30 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { Button, ListItem } from 'react-native-elements';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
-import theme from '../styles/theme';
-import Header from '../components/Header';
-import { ViewStyle } from 'react-native';
+import React from "react";
+import styled from "styled-components/native";
+import { Button, ListItem } from "react-native-elements";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/navigation";
+import theme from "../styles/theme";
+import Header from "../components/Header";
+import { ViewStyle } from "react-native";
 
 type ProfileScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, "Profile">;
 };
 
 const ProfileScreen: React.FC = () => {
   const { user, signOut } = useAuth();
-  const navigation = useNavigation<ProfileScreenProps['navigation']>();
+  const navigation = useNavigation<ProfileScreenProps["navigation"]>();
 
   const getRoleText = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'Administrador';
-      case 'doctor':
-        return 'Médico';
-      case 'patient':
-        return 'Paciente';
+      case "admin":
+        return "Administrador";
+      case "doctor":
+        return "Médico";
+      case "patient":
+        return "Paciente";
       default:
         return role;
     }
@@ -37,14 +37,16 @@ const ProfileScreen: React.FC = () => {
         <Title>Meu Perfil</Title>
 
         <ProfileCard>
-          <Avatar source={{ uri: user?.image || 'https://via.placeholder.com/150' }} />
+          <Avatar
+            source={{ uri: user?.image || "https://via.placeholder.com/150" }}
+          />
           <Name>{user?.name}</Name>
           <Email>{user?.email}</Email>
-          <RoleBadge role={user?.role || ''}>
-            <RoleText>{getRoleText(user?.role || '')}</RoleText>
+          <RoleBadge role={user?.role || ""}>
+            <RoleText>{getRoleText(user?.role || "")}</RoleText>
           </RoleBadge>
-          
-          {user?.role === 'doctor' && (
+
+          {user?.role === "doctor" && (
             <SpecialtyText>Especialidade: {user?.specialty}</SpecialtyText>
           )}
         </ProfileCard>
@@ -73,7 +75,7 @@ const styles = {
   },
   button: {
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   buttonStyle: {
     backgroundColor: theme.colors.primary,
@@ -135,12 +137,12 @@ const Email = styled.Text`
 const RoleBadge = styled.View<{ role: string }>`
   background-color: ${(props: { role: string }) => {
     switch (props.role) {
-      case 'admin':
-        return theme.colors.primary + '20';
-      case 'doctor':
-        return theme.colors.success + '20';
+      case "admin":
+        return theme.colors.primary + "20";
+      case "doctor":
+        return theme.colors.success + "20";
       default:
-        return theme.colors.secondary + '20';
+        return theme.colors.secondary + "20";
     }
   }};
   padding: 4px 12px;

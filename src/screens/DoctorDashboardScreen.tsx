@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { ScrollView, ViewStyle, TextStyle } from 'react-native';
-import { Button, ListItem, Text } from 'react-native-elements';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
-import { RootStackParamList } from '../types/navigation';
-import theme from '../styles/theme';
-import Header from '../components/Header';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import styled from "styled-components/native";
+import { ScrollView, ViewStyle, TextStyle } from "react-native";
+import { Button, ListItem, Text } from "react-native-elements";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
+import { RootStackParamList } from "../types/navigation";
+import theme from "../styles/theme";
+import Header from "../components/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DoctorDashboardScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'DoctorDashboard'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, "DoctorDashboard">;
 };
 
 interface Appointment {
@@ -24,7 +24,7 @@ interface Appointment {
   date: string;
   time: string;
   specialty: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: "pending" | "confirmed" | "cancelled";
 }
 
 interface StyledProps {
@@ -33,9 +33,9 @@ interface StyledProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'confirmed':
+    case "confirmed":
       return theme.colors.success;
-    case 'cancelled':
+    case "cancelled":
       return theme.colors.error;
     default:
       return theme.colors.warning;
@@ -44,54 +44,64 @@ const getStatusColor = (status: string) => {
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case 'confirmed':
-      return 'Confirmada';
-    case 'cancelled':
-      return 'Cancelada';
+    case "confirmed":
+      return "Confirmada";
+    case "cancelled":
+      return "Cancelada";
     default:
-      return 'Pendente';
+      return "Pendente";
   }
 };
 
 const DoctorDashboardScreen: React.FC = () => {
   const { user, signOut } = useAuth();
-  const navigation = useNavigation<DoctorDashboardScreenProps['navigation']>();
+  const navigation = useNavigation<DoctorDashboardScreenProps["navigation"]>();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadAppointments = async () => {
     try {
-      const storedAppointments = await AsyncStorage.getItem('@MedicalApp:appointments');
+      const storedAppointments = await AsyncStorage.getItem(
+        "@MedicalApp:appointments",
+      );
       if (storedAppointments) {
         const allAppointments: Appointment[] = JSON.parse(storedAppointments);
         const doctorAppointments = allAppointments.filter(
-          (appointment) => appointment.doctorId === user?.id
+          (appointment) => appointment.doctorId === user?.id,
         );
         setAppointments(doctorAppointments);
       }
     } catch (error) {
-      console.error('Erro ao carregar consultas:', error);
+      console.error("Erro ao carregar consultas:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (appointmentId: string, newStatus: 'confirmed' | 'cancelled') => {
+  const handleUpdateStatus = async (
+    appointmentId: string,
+    newStatus: "confirmed" | "cancelled",
+  ) => {
     try {
-      const storedAppointments = await AsyncStorage.getItem('@MedicalApp:appointments');
+      const storedAppointments = await AsyncStorage.getItem(
+        "@MedicalApp:appointments",
+      );
       if (storedAppointments) {
         const allAppointments: Appointment[] = JSON.parse(storedAppointments);
-        const updatedAppointments = allAppointments.map(appointment => {
+        const updatedAppointments = allAppointments.map((appointment) => {
           if (appointment.id === appointmentId) {
             return { ...appointment, status: newStatus };
           }
           return appointment;
         });
-        await AsyncStorage.setItem('@MedicalApp:appointments', JSON.stringify(updatedAppointments));
+        await AsyncStorage.setItem(
+          "@MedicalApp:appointments",
+          JSON.stringify(updatedAppointments),
+        );
         loadAppointments(); // Recarrega a lista
       }
     } catch (error) {
-      console.error('Erro ao atualizar status:', error);
+      console.error("Erro ao atualizar status:", error);
     }
   };
 
@@ -99,7 +109,7 @@ const DoctorDashboardScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       loadAppointments();
-    }, [])
+    }, []),
   );
 
   return (
@@ -110,7 +120,7 @@ const DoctorDashboardScreen: React.FC = () => {
 
         <Button
           title="Meu Perfil"
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate("Profile")}
           containerStyle={styles.button as ViewStyle}
           buttonStyle={styles.buttonStyle}
         />
@@ -124,7 +134,7 @@ const DoctorDashboardScreen: React.FC = () => {
             <AppointmentCard key={appointment.id}>
               <ListItem.Content>
                 <ListItem.Title style={styles.patientName as TextStyle}>
-                  Paciente: {appointment.patientName || 'Nome não disponível'}
+                  Paciente: {appointment.patientName || "Nome não disponível"}
                 </ListItem.Title>
                 <ListItem.Subtitle style={styles.dateTime as TextStyle}>
                   {appointment.date} às {appointment.time}
@@ -137,17 +147,21 @@ const DoctorDashboardScreen: React.FC = () => {
                     {getStatusText(appointment.status)}
                   </StatusText>
                 </StatusBadge>
-                {appointment.status === 'pending' && (
+                {appointment.status === "pending" && (
                   <ButtonContainer>
                     <Button
                       title="Confirmar"
-                      onPress={() => handleUpdateStatus(appointment.id, 'confirmed')}
+                      onPress={() =>
+                        handleUpdateStatus(appointment.id, "confirmed")
+                      }
                       containerStyle={styles.actionButton as ViewStyle}
                       buttonStyle={styles.confirmButton}
                     />
                     <Button
                       title="Cancelar"
-                      onPress={() => handleUpdateStatus(appointment.id, 'cancelled')}
+                      onPress={() =>
+                        handleUpdateStatus(appointment.id, "cancelled")
+                      }
                       containerStyle={styles.actionButton as ViewStyle}
                       buttonStyle={styles.cancelButton}
                     />
@@ -175,7 +189,7 @@ const styles = {
   },
   button: {
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   buttonStyle: {
     backgroundColor: theme.colors.primary,
@@ -187,7 +201,7 @@ const styles = {
   },
   actionButton: {
     marginTop: 8,
-    width: '48%',
+    width: "48%",
   },
   confirmButton: {
     backgroundColor: theme.colors.success,
@@ -199,17 +213,17 @@ const styles = {
   },
   dateTime: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
   },
   patientName: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
   },
   specialty: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: theme.colors.text,
   },
 };
@@ -251,7 +265,8 @@ const EmptyText = styled.Text`
 `;
 
 const StatusBadge = styled.View<StyledProps>`
-  background-color: ${(props: StyledProps) => getStatusColor(props.status) + '20'};
+  background-color: ${(props: StyledProps) =>
+    getStatusColor(props.status) + "20"};
   padding: 4px 8px;
   border-radius: 4px;
   align-self: flex-start;
@@ -270,4 +285,5 @@ const ButtonContainer = styled.View`
   margin-top: 8px;
 `;
 
-export default DoctorDashboardScreen; 
+export default DoctorDashboardScreen;
+

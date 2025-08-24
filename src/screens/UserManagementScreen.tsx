@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import styled from 'styled-components/native';
-import { ScrollView, ViewStyle, TextStyle } from 'react-native';
-import { Button, ListItem, Text } from 'react-native-elements';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
-import { RootStackParamList } from '../types/navigation';
-import theme from '../styles/theme';
-import Header from '../components/Header';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import styled from "styled-components/native";
+import { ScrollView, ViewStyle, TextStyle } from "react-native";
+import { Button, ListItem, Text } from "react-native-elements";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
+import { RootStackParamList } from "../types/navigation";
+import theme from "../styles/theme";
+import Header from "../components/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type UserManagementScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'UserManagement'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, "UserManagement">;
 };
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'doctor' | 'patient';
+  role: "admin" | "doctor" | "patient";
 }
 
 interface StyledProps {
@@ -28,21 +28,21 @@ interface StyledProps {
 
 const UserManagementScreen: React.FC = () => {
   const { user } = useAuth();
-  const navigation = useNavigation<UserManagementScreenProps['navigation']>();
+  const navigation = useNavigation<UserManagementScreenProps["navigation"]>();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadUsers = async () => {
     try {
-      const storedUsers = await AsyncStorage.getItem('@MedicalApp:users');
+      const storedUsers = await AsyncStorage.getItem("@MedicalApp:users");
       if (storedUsers) {
         const allUsers: User[] = JSON.parse(storedUsers);
         // Filtra o usuário atual da lista
-        const filteredUsers = allUsers.filter(u => u.id !== user?.id);
+        const filteredUsers = allUsers.filter((u) => u.id !== user?.id);
         setUsers(filteredUsers);
       }
     } catch (error) {
-      console.error('Erro ao carregar usuários:', error);
+      console.error("Erro ao carregar usuários:", error);
     } finally {
       setLoading(false);
     }
@@ -50,15 +50,18 @@ const UserManagementScreen: React.FC = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const storedUsers = await AsyncStorage.getItem('@MedicalApp:users');
+      const storedUsers = await AsyncStorage.getItem("@MedicalApp:users");
       if (storedUsers) {
         const allUsers: User[] = JSON.parse(storedUsers);
-        const updatedUsers = allUsers.filter(u => u.id !== userId);
-        await AsyncStorage.setItem('@MedicalApp:users', JSON.stringify(updatedUsers));
+        const updatedUsers = allUsers.filter((u) => u.id !== userId);
+        await AsyncStorage.setItem(
+          "@MedicalApp:users",
+          JSON.stringify(updatedUsers),
+        );
         loadUsers(); // Recarrega a lista
       }
     } catch (error) {
-      console.error('Erro ao deletar usuário:', error);
+      console.error("Erro ao deletar usuário:", error);
     }
   };
 
@@ -66,17 +69,17 @@ const UserManagementScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       loadUsers();
-    }, [])
+    }, []),
   );
 
   const getRoleText = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'Administrador';
-      case 'doctor':
-        return 'Médico';
-      case 'patient':
-        return 'Paciente';
+      case "admin":
+        return "Administrador";
+      case "doctor":
+        return "Médico";
+      case "patient":
+        return "Paciente";
       default:
         return role;
     }
@@ -110,9 +113,7 @@ const UserManagementScreen: React.FC = () => {
                   {user.email}
                 </ListItem.Subtitle>
                 <RoleBadge role={user.role}>
-                  <RoleText role={user.role}>
-                    {getRoleText(user.role)}
-                  </RoleText>
+                  <RoleText role={user.role}>{getRoleText(user.role)}</RoleText>
                 </RoleBadge>
                 <ButtonContainer>
                   <Button
@@ -150,7 +151,7 @@ const styles = {
   },
   button: {
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   buttonStyle: {
     backgroundColor: theme.colors.primary,
@@ -162,7 +163,7 @@ const styles = {
   },
   actionButton: {
     marginTop: 8,
-    width: '48%',
+    width: "48%",
   },
   editButton: {
     backgroundColor: theme.colors.primary,
@@ -174,7 +175,7 @@ const styles = {
   },
   userName: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.text,
   },
   userEmail: {
@@ -223,12 +224,12 @@ const EmptyText = styled.Text`
 const RoleBadge = styled.View<StyledProps>`
   background-color: ${(props: StyledProps) => {
     switch (props.role) {
-      case 'admin':
-        return theme.colors.primary + '20';
-      case 'doctor':
-        return theme.colors.success + '20';
+      case "admin":
+        return theme.colors.primary + "20";
+      case "doctor":
+        return theme.colors.success + "20";
       default:
-        return theme.colors.secondary + '20';
+        return theme.colors.secondary + "20";
     }
   }};
   padding: 4px 8px;
@@ -240,9 +241,9 @@ const RoleBadge = styled.View<StyledProps>`
 const RoleText = styled.Text<StyledProps>`
   color: ${(props: StyledProps) => {
     switch (props.role) {
-      case 'admin':
+      case "admin":
         return theme.colors.primary;
-      case 'doctor':
+      case "doctor":
         return theme.colors.success;
       default:
         return theme.colors.secondary;
@@ -258,4 +259,5 @@ const ButtonContainer = styled.View`
   margin-top: 8px;
 `;
 
-export default UserManagementScreen; 
+export default UserManagementScreen;
+

@@ -1,15 +1,15 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { ViewStyle } from 'react-native';
-import { Card, Text, Avatar } from 'react-native-elements';
-import theme from '../styles/theme';
+import React from "react";
+import styled from "styled-components/native";
+import { ViewStyle } from "react-native";
+import { Card, Text, Avatar } from "react-native-elements";
+import theme from "../styles/theme";
 
 interface AppointmentCardProps {
   doctorName: string;
   date: string;
   time: string;
   specialty: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: "pending" | "confirmed" | "cancelled";
   onPress?: () => void;
   style?: ViewStyle;
 }
@@ -25,9 +25,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
 }) => {
   const getStatusColor = () => {
     switch (status) {
-      case 'confirmed':
+      case "confirmed":
         return theme.colors.success;
-      case 'cancelled':
+      case "cancelled":
         return theme.colors.error;
       default:
         return theme.colors.primary;
@@ -41,7 +41,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           <Avatar
             size="medium"
             rounded
-            source={{ uri: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 10)}.jpg` }}
+            source={{
+              uri: `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 10)}.jpg`,
+            }}
             containerStyle={styles.avatar}
           />
           <TextContainer>
@@ -64,7 +66,11 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         <StatusContainer>
           <StatusDot color={getStatusColor()} />
           <StatusText color={getStatusColor()}>
-            {status === 'confirmed' ? 'Confirmada' : status === 'cancelled' ? 'Cancelada' : 'Pendente'}
+            {status === "confirmed"
+              ? "Confirmada"
+              : status === "cancelled"
+                ? "Cancelada"
+                : "Pendente"}
           </StatusText>
         </StatusContainer>
       </CardContent>
@@ -79,7 +85,7 @@ const styles = {
     marginVertical: 8,
     padding: 15,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -122,7 +128,7 @@ const AppointmentInfo = styled.View`
 const InfoRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  marginBottom: 5px;
+  marginbottom: 5px;
 `;
 
 const InfoLabel = styled.Text`
@@ -147,14 +153,15 @@ const StatusDot = styled.View<{ color: string }>`
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background-color: ${props => props.color};
+  background-color: ${(props) => props.color};
   margin-right: 8px;
 `;
 
 const StatusText = styled.Text<{ color: string }>`
   font-size: 14px;
-  color: ${props => props.color};
+  color: ${(props) => props.color};
   font-weight: 500;
 `;
 
-export default AppointmentCard; 
+export default AppointmentCard;
+

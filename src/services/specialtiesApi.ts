@@ -1,4 +1,4 @@
-import { apiClient, API_ENDPOINTS } from './api';
+import { apiClient, API_ENDPOINTS } from "./api";
 
 /**
  * Interface para a especialidade retornada pela API
@@ -25,11 +25,13 @@ export const specialtiesApiService = {
    */
   async getAllSpecialties(): Promise<Specialty[]> {
     try {
-      const specialties = await apiClient.get<ApiSpecialty[]>(API_ENDPOINTS.SPECIALTIES);
+      const specialties = await apiClient.get<ApiSpecialty[]>(
+        API_ENDPOINTS.SPECIALTIES,
+      );
       return specialties.map(this.mapApiSpecialtyToSpecialty);
     } catch (error) {
-      console.error('Erro ao buscar especialidades:', error);
-      throw new Error('Erro ao carregar especialidades');
+      console.error("Erro ao buscar especialidades:", error);
+      throw new Error("Erro ao carregar especialidades");
     }
   },
 

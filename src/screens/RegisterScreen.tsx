@@ -18,9 +18,9 @@ const RegisterScreen: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState<"PACIENTE" | "ADMIN">("PACIENTE"); // NOVO
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [userType, setUserType] = useState<"PACIENTE" | "ADMIN">("PACIENTE");
 
   const handleRegister = async () => {
     try {
@@ -36,7 +36,7 @@ const RegisterScreen: React.FC = () => {
         name,
         email,
         password,
-        userType,
+        userType, // NOVO - envia tipo de usuário
       });
 
       // Após o registro bem-sucedido, navega para o login
@@ -50,7 +50,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <Container>
-      <Title>Cadastro de Paciente</Title>
+      <Title>Cadastro de Usuário</Title>
 
       <Input
         placeholder="Nome completo"
@@ -77,8 +77,7 @@ const RegisterScreen: React.FC = () => {
         containerStyle={styles.input}
       />
 
-      {error ? <ErrorText>{error}</ErrorText> : null}
-
+      {/* NOVO - Seleção de tipo de usuário */}
       <SectionTitle>Tipo de Usuário</SectionTitle>
       <UserTypeContainer>
         <UserTypeButton
@@ -99,6 +98,8 @@ const RegisterScreen: React.FC = () => {
           </UserTypeText>
         </UserTypeButton>
       </UserTypeContainer>
+
+      {error ? <ErrorText>{error}</ErrorText> : null}
 
       <Button
         title="Cadastrar"
@@ -155,6 +156,35 @@ const Title = styled.Text`
   color: ${theme.colors.text};
 `;
 
+const SectionTitle = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: ${theme.colors.text};
+`;
+
+const UserTypeContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+const UserTypeButton = styled.TouchableOpacity<{ selected: boolean }>`
+  flex: 1;
+  padding: 12px;
+  margin-right: 10px;
+  align-items: center;
+  border-radius: 8px;
+  background-color: ${(props) =>
+    props.selected ? theme.colors.primary : theme.colors.surface};
+`;
+
+const UserTypeText = styled.Text<{ selected: boolean }>`
+  color: ${(props) => (props.selected ? "#fff" : theme.colors.text)};
+  font-weight: ${(props) => (props.selected ? "bold" : "normal")};
+  font-size: 14px;
+`;
+
 const ErrorText = styled.Text`
   color: ${theme.colors.error};
   text-align: center;
@@ -162,4 +192,3 @@ const ErrorText = styled.Text`
 `;
 
 export default RegisterScreen;
-
