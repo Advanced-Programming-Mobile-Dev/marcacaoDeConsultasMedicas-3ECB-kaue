@@ -1,48 +1,28 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, LoginCredentials, RegisterData, AuthResponse } from '../types/auth';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  User,
+  LoginCredentials,
+  RegisterData,
+  AuthResponse,
+} from "../types/auth";
 
 // Chaves de armazenamento
 const STORAGE_KEYS = {
-  USER: '@MedicalApp:user',
-  TOKEN: '@MedicalApp:token',
-  REGISTERED_USERS: '@MedicalApp:registeredUsers',
+  USER: "@MedicalApp:user",
+  TOKEN: "@MedicalApp:token",
+  REGISTERED_USERS: "@MedicalApp:registeredUsers",
 };
 
 // Médicos mockados que podem fazer login
-const mockDoctors = [
-  {
-    id: '1',
-    name: 'Dr. João Silva',
-    email: 'joao@example.com',
-    role: 'doctor' as const,
-    specialty: 'Cardiologia',
-    image: 'https://randomuser.me/api/portraits/men/1.jpg',
-  },
-  {
-    id: '2',
-    name: 'Dra. Maria Santos',
-    email: 'maria@example.com',
-    role: 'doctor' as const,
-    specialty: 'Pediatria',
-    image: 'https://randomuser.me/api/portraits/women/1.jpg',
-  },
-  {
-    id: '3',
-    name: 'Dr. Pedro Oliveira',
-    email: 'pedro@example.com',
-    role: 'doctor' as const,
-    specialty: 'Ortopedia',
-    image: 'https://randomuser.me/api/portraits/men/2.jpg',
-  },
-];
+const mockDoctors: any = [];
 
 // Admin mockado
 const mockAdmin = {
-  id: 'admin',
-  name: 'Administrador',
-  email: 'admin@example.com',
-  role: 'admin' as const,
-  image: 'https://randomuser.me/api/portraits/men/3.jpg',
+  id: "admin",
+  name: "Administrador",
+  email: "admin@example.com",
+  role: "admin" as const,
+  image: "https://randomuser.me/api/portraits/men/3.jpg",
 };
 
 // Lista de usuários cadastrados (pacientes)
@@ -51,16 +31,19 @@ let registeredUsers: (User & { password: string })[] = [];
 export const authService = {
   async signIn(credentials: LoginCredentials): Promise<AuthResponse> {
     // Verifica se é o admin
-    if (credentials.email === mockAdmin.email && credentials.password === '123456') {
+    if (
+      credentials.email === mockAdmin.email &&
+      credentials.password === "123456"
+    ) {
       return {
         user: mockAdmin,
-        token: 'admin-token',
+        token: "admin-token",
       };
     }
 
     // Verifica se é um médico
     const doctor = mockDoctors.find(
-      (d) => d.email === credentials.email && credentials.password === '123456'
+      (d) => d.email === credentials.email && credentials.password === "123456",
     );
     if (doctor) {
       return {
@@ -70,9 +53,7 @@ export const authService = {
     }
 
     // Verifica se é um paciente registrado
-    const patient = registeredUsers.find(
-      (p) => p.email === credentials.email
-    );
+    const patient = registeredUsers.find((p) => p.email === credentials.email);
     if (patient) {
       // Verifica a senha do paciente
       if (credentials.password === patient.password) {
@@ -85,7 +66,7 @@ export const authService = {
       }
     }
 
-    throw new Error('Email ou senha inválidos');
+    throw new Error("Email ou senha inválidos");
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
@@ -95,7 +76,7 @@ export const authService = {
       mockAdmin.email === data.email ||
       registeredUsers.some((u) => u.email === data.email)
     ) {
-      throw new Error('Email já está em uso');
+      throw new Error("Email já está em uso");
     }
 
     // Cria um novo paciente
@@ -103,8 +84,8 @@ export const authService = {
       id: `patient-${registeredUsers.length + 1}`,
       name: data.name,
       email: data.email,
-      role: 'patient' as const,
-      image: `https://randomuser.me/api/portraits/${registeredUsers.length % 2 === 0 ? 'men' : 'women'}/${
+      role: "patient" as const,
+      image: `https://randomuser.me/api/portraits/${registeredUsers.length % 2 === 0 ? "men" : "women"}/${
         registeredUsers.length + 1
       }.jpg`,
       password: data.password,
@@ -113,7 +94,10 @@ export const authService = {
     registeredUsers.push(newPatient);
 
     // Salva a lista atualizada de usuários
-    await AsyncStorage.setItem(STORAGE_KEYS.REGISTERED_USERS, JSON.stringify(registeredUsers));
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.REGISTERED_USERS,
+      JSON.stringify(registeredUsers),
+    );
 
     // Remove a senha do objeto antes de retornar
     const { password, ...patientWithoutPassword } = newPatient;
@@ -137,7 +121,7 @@ export const authService = {
       }
       return null;
     } catch (error) {
-      console.error('Erro ao obter usuário armazenado:', error);
+      console.error("Erro ao obter usuário armazenado:", error);
       return null;
     }
   },
@@ -148,7 +132,8 @@ export const authService = {
   },
 
   async getAllDoctors(): Promise<User[]> {
-    return mockDoctors;
+    // DEPRECIADO: Use `authApiService.getAllDoctors()`
+    return [];
   },
 
   async getPatients(): Promise<User[]> {
@@ -158,12 +143,15 @@ export const authService = {
   // Função para carregar usuários registrados ao iniciar o app
   async loadRegisteredUsers(): Promise<void> {
     try {
-      const usersJson = await AsyncStorage.getItem(STORAGE_KEYS.REGISTERED_USERS);
+      const usersJson = await AsyncStorage.getItem(
+        STORAGE_KEYS.REGISTERED_USERS,
+      );
       if (usersJson) {
         registeredUsers = JSON.parse(usersJson);
       }
     } catch (error) {
-      console.error('Erro ao carregar usuários registrados:', error);
+      console.error("Erro ao carregar usuários registrados:", error);
     }
   },
-}; 
+};
+
