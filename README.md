@@ -32,6 +32,7 @@ Este é um aplicativo mobile desenvolvido em React Native para agendamento de co
 ## Pré-requisitos
 
 Antes de começar, você precisa ter instalado em sua máquina:
+
 - [Node.js](https://nodejs.org/) (versão 14 ou superior)
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 - [React Native CLI](https://reactnative.dev/docs/environment-setup)
@@ -41,12 +42,14 @@ Antes de começar, você precisa ter instalado em sua máquina:
 ## Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/seu-usuario/marcacaoDeConsultasMedicas.git
 cd marcacaoDeConsultasMedicas
 ```
 
 2. Instale as dependências:
+
 ```bash
 npm install
 # ou
@@ -54,6 +57,7 @@ yarn install
 ```
 
 3. Instale as dependências do iOS (apenas em macOS):
+
 ```bash
 cd ios
 pod install
@@ -61,6 +65,7 @@ cd ..
 ```
 
 4. Inicie o aplicativo:
+
 ```bash
 # Para Android
 npm run android
@@ -95,18 +100,21 @@ src/
 ## Funcionalidades Detalhadas
 
 ### Agendamento de Consultas
+
 - Seleção de médico por especialidade
 - Escolha de data e horário
 - Adição de descrição/motivo da consulta
 - Validação de disponibilidade
 
 ### Gerenciamento de Consultas
+
 - Visualização de todas as consultas agendadas
 - Edição de consultas existentes
 - Cancelamento de consultas
 - Atualização de status
 
 ### Interface do Usuário
+
 - Design moderno e responsivo
 - Navegação intuitiva
 - Feedback visual de ações
@@ -143,4 +151,5 @@ Se você encontrar algum problema ou tiver sugestões, por favor abra uma issue 
 
 ---
 
-Desenvolvido por Professor Hete Caetano e compartilhado com alunos de TDS 
+Desenvolvido por Professor Hete Caetano e compartilhado com alunos de TDS
+

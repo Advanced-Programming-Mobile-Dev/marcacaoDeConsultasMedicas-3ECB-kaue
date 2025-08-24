@@ -3,24 +3,25 @@
  */
 
 // URL base da API do backend
-export const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = "http://localhost:8080";
 
 // Endpoints da API
 export const API_ENDPOINTS = {
   // Autenticação
-  LOGIN: '/usuarios/login',
-  REGISTER: '/usuarios',
-  CURRENT_USER: '/usuarios/me',
-  
+  LOGIN: "/usuarios/login",
+  REGISTER: "/usuarios",
+  CURRENT_USER: "/usuarios/me",
+
   // Usuários
-  USERS: '/usuarios',
-  DOCTORS: '/usuarios/medicos',
-  
+  USERS: "/usuarios",
+  DOCTORS: "/usuarios/medicos",
+  CHANGE_PASSWORD: "/usuarios",
+
   // Especialidades
-  SPECIALTIES: '/especialidades',
-  
+  SPECIALTIES: "/especialidades",
+
   // Consultas
-  APPOINTMENTS: '/consultas',
+  APPOINTMENTS: "/consultas",
 } as const;
 
 /**
@@ -46,7 +47,7 @@ export class ApiClient {
    */
   private getHeaders(): HeadersInit {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (this.token) {
@@ -61,12 +62,14 @@ export class ApiClient {
    */
   async get<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: this.getHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+      throw new Error(
+        `HTTP Error: ${response.status} - ${response.statusText}`,
+      );
     }
 
     return response.json();
@@ -77,7 +80,7 @@ export class ApiClient {
    */
   async post<T>(endpoint: string, data?: any): Promise<T> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
@@ -95,7 +98,7 @@ export class ApiClient {
    */
   async put<T>(endpoint: string, data?: any): Promise<T> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
@@ -113,7 +116,7 @@ export class ApiClient {
    */
   async delete(endpoint: string): Promise<void> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: this.getHeaders(),
     });
 
