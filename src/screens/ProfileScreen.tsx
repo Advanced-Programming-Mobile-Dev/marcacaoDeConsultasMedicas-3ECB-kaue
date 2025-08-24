@@ -1,89 +1,163 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import {Button} from 'react-native-elements';
-import {HeaderContainer, HeaderTitle} from '../components/Header';
+import { Button, ListItem } from 'react-native-elements';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 import theme from '../styles/theme';
-// @ts-ignore
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-
-type RootStackParamList = {
-    Home: undefined;
-    CreateAppointment: undefined;
-    Profile: undefined;
-};
+import Header from '../components/Header';
+import { ViewStyle } from 'react-native';
 
 type ProfileScreenProps = {
-    navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>;
 };
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
-    return (
-        <Container>
-            <HeaderContainer>
-                <HeaderTitle>Meu Perfil</HeaderTitle>
-            </HeaderContainer>
+const ProfileScreen: React.FC = () => {
+  const { user, signOut } = useAuth();
+  const navigation = useNavigation<ProfileScreenProps['navigation']>();
 
-            <Content>
-                <Button
-                    title="Voltar"
-                    icon={{
-                        name: 'arrow-left',
-                        type: 'font-awesome',
-                        size: 20,
-                        color: 'white'
-                    }}
-                    buttonStyle={{
-                        backgroundColor: theme.colors.primary,
-                        borderRadius: 8,
-                        padding: 12,
-                        marginBottom: 20
-                    }}
-                    onPress={() => navigation.goBack()}
-                />
+  const getRoleText = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'Administrador';
+      case 'doctor':
+        return 'Médico';
+      case 'patient':
+        return 'Paciente';
+      default:
+        return role;
+    }
+  };
 
-                <ProfileInfo>
-                    <Avatar source={{uri: 'https://via.placeholder.com/150'}}/>
-                    <Name>Nome do Usuário</Name>
-                    <Email>usuario@email.com</Email>
-                </ProfileInfo>
-            </Content>
-        </Container>
-    );
+  return (
+    <Container>
+      <Header />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Title>Meu Perfil</Title>
+
+        <ProfileCard>
+          <Avatar source={{ uri: user?.image || 'https://via.placeholder.com/150' }} />
+          <Name>{user?.name}</Name>
+          <Email>{user?.email}</Email>
+          <RoleBadge role={user?.role || ''}>
+            <RoleText>{getRoleText(user?.role || '')}</RoleText>
+          </RoleBadge>
+          
+          {user?.role === 'doctor' && (
+            <SpecialtyText>Especialidade: {user?.specialty}</SpecialtyText>
+          )}
+        </ProfileCard>
+
+        <Button
+          title="Voltar"
+          onPress={() => navigation.goBack()}
+          containerStyle={styles.button as ViewStyle}
+          buttonStyle={styles.buttonStyle}
+        />
+
+        <Button
+          title="Sair"
+          onPress={signOut}
+          containerStyle={styles.button as ViewStyle}
+          buttonStyle={styles.logoutButton}
+        />
+      </ScrollView>
+    </Container>
+  );
+};
+
+const styles = {
+  scrollContent: {
+    padding: 20,
+  },
+  button: {
+    marginBottom: 20,
+    width: '100%',
+  },
+  buttonStyle: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+  },
+  logoutButton: {
+    backgroundColor: theme.colors.error,
+    paddingVertical: 12,
+  },
 };
 
 const Container = styled.View`
-    flex: 1;
-    background-color: ${theme.colors.background};
+  flex: 1;
+  background-color: ${theme.colors.background};
 `;
 
-const Content = styled.View`
-    flex: 1;
-    padding: ${theme.spacing.medium}px;
+const ScrollView = styled.ScrollView`
+  flex: 1;
 `;
 
-const ProfileInfo = styled.View`
-    align-items: center;
-    margin-top: ${theme.spacing.large}px;
+const Title = styled.Text`
+  font-size: 24px;
+  font-weight: bold;
+  color: ${theme.colors.text};
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
+const ProfileCard = styled.View`
+  background-color: ${theme.colors.background};
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+  border-width: 1px;
+  border-color: ${theme.colors.border};
 `;
 
 const Avatar = styled.Image`
-    width: 120px;
-    height: 120px;
-    border-radius: 60px;
-    margin-bottom: ${theme.spacing.medium}px;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  margin-bottom: 16px;
 `;
 
 const Name = styled.Text`
-    font-size: ${theme.typography.title.fontSize}px;
-    font-weight: ${theme.typography.title.fontWeight};
-    color: ${theme.colors.text};
-    margin-bottom: ${theme.spacing.small}px;
+  font-size: 20px;
+  font-weight: bold;
+  color: ${theme.colors.text};
+  margin-bottom: 8px;
 `;
 
 const Email = styled.Text`
-    font-size: ${theme.typography.body.fontSize}px;
-    color: ${theme.colors.text};
-    opacity: 0.8;
+  font-size: 16px;
+  color: ${theme.colors.text};
+  margin-bottom: 8px;
+`;
+
+const RoleBadge = styled.View<{ role: string }>`
+  background-color: ${(props: { role: string }) => {
+    switch (props.role) {
+      case 'admin':
+        return theme.colors.primary + '20';
+      case 'doctor':
+        return theme.colors.success + '20';
+      default:
+        return theme.colors.secondary + '20';
+    }
+  }};
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+`;
+
+const RoleText = styled.Text`
+  color: ${theme.colors.text};
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const SpecialtyText = styled.Text`
+  font-size: 16px;
+  color: ${theme.colors.text};
+  margin-top: 8px;
 `;
 
 export default ProfileScreen;
